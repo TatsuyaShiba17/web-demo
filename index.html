@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f5f8fc">
+  <meta name="description" content="Join and check school office queues with QLite.">
+  <title>QLite</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="script.js" defer></script>
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="#home" aria-label="QLite home"><span class="brand-mark" aria-hidden="true">Q</span><span>QLite</span></a>
+    <nav aria-label="Main navigation">
+      <a href="#home" data-route="home">Home</a>
+      <a href="#join" data-route="join">Join queue</a>
+      <a href="#status" data-route="status">Check queue</a>
+      <a href="#staff" data-route="staff">Staff login</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="view hero" id="home-view" aria-labelledby="home-title">
+      <div class="hero-copy">
+        <p class="eyebrow">SCHOOL SERVICE.</p>
+        <h1 id="home-title"><span>Save your time.</span></h1>
+        <p class="intro">Take a place in line for a school office, then check your queue number and arrive when it’s nearly your turn.</p>
+        <div class="button-row">
+          <a class="button primary" href="#join">Join queue <span aria-hidden="true">→</span></a>
+          <a class="button secondary" href="#status">Check queue</a>
+        </div>
+        <p class="local-note"><span class="dot"></span> Prototype queue data is saved in this browser</p>
+      </div>
+      <aside class="preview-card" aria-label="Example queue ticket">
+        <div class="preview-top"><span class="office-icon" aria-hidden="true">▤</span><span><strong>Registrar</strong><small>Document request</small></span><span class="status-pill">Waiting</span></div>
+        <div class="ticket-number"><span>YOUR QUEUE NUMBER</span><strong>#047</strong></div>
+        <div class="preview-stats"><div><span>NOW SERVING</span><strong>#042</strong></div><div><span>PEOPLE AHEAD</span><strong>5</strong></div><div><span>EST. WAIT</span><strong>~25 min</strong></div></div>
+        <div class="progress-track"><span></span></div><small class="muted">You’re moving up in the queue</small>
+      </aside>
+      <section class="home-queues" aria-labelledby="home-queues-title">
+        <div class="list-heading"><div><p class="eyebrow">LIVE QUEUE</p><h2 id="home-queues-title">Queues right now</h2><p>Updates automatically as students join or staff call the next number.</p></div><span class="live-label"><span class="dot" aria-hidden="true"></span> Live</span></div>
+        <div id="home-queue-list" class="home-queue-list" aria-live="polite" aria-atomic="true"></div>
+      </section>
+    </section>
+
+    <section class="view content-view" id="join-view" aria-labelledby="join-title" hidden>
+      <div class="page-heading"><p class="eyebrow">STUDENT SERVICES</p><h1 id="join-title">Join a queue</h1><p>Choose an office and service to get your queue number.</p></div>
+      <div class="panel form-panel">
+        <form id="join-form">
+          <label for="student-name">Your name or identifier</label>
+          <input id="student-name" name="name" type="text" maxlength="50" placeholder="e.g. Jm Roco or a17s" autocomplete="name" required>
+          <div class="form-grid">
+            <div><label for="join-office">School office</label><select id="join-office" name="office" required></select></div>
+            <div><label for="join-service">Service needed</label><select id="join-service" name="service" required></select></div>
+          </div>
+          <button class="button primary full" type="submit">Get queue number <span aria-hidden="true">→</span></button>
+        </form>
+        
+      </div>
+      <div id="ticket-result" class="panel ticket-result" hidden aria-live="polite"></div>
+    </section>
+
+    <section class="view content-view" id="status-view" aria-labelledby="status-title" hidden>
+      <div class="page-heading"><p class="eyebrow">LIVE QUEUE CHECK</p><h1 id="status-title">Check your queue</h1><p>Enter the queue number shown on your ticket.</p></div>
+      <div class="panel form-panel">
+        <form id="status-form" class="status-form"><div><label for="status-office">School office</label><select id="status-office"></select></div><div><label for="status-number">Queue number</label><input id="status-number" inputmode="numeric" pattern="[0-9]{1,3}" maxlength="3" placeholder="e.g. 047" required></div><button class="button primary" type="submit">Check status</button></form>
+        <p id="status-message" class="message" aria-live="polite"></p>
+        <div id="status-result" aria-live="polite"></div>
+      </div>
+    </section>
+
+    <section class="view content-view" id="staff-view" aria-labelledby="staff-login-title" hidden>
+      <div id="staff-login-panel" class="panel form-panel staff-login-panel">
+        <div class="page-heading"><p class="eyebrow">ADMIN ACCESS</p><h1 id="staff-login-title">Admin dashboard login</h1><p>Sign in to manage school office queues.</p></div>
+        <form id="staff-login-form">
+          <label for="admin-username">Username</label>
+          <input id="admin-username" name="username" type="text" autocomplete="username" required>
+          <label for="admin-password">Password</label>
+          <input id="admin-password" name="password" type="password" autocomplete="current-password" required>
+          <button class="button primary full" type="submit">Log in</button>
+          <p id="login-message" class="message" role="alert" aria-live="assertive"></p>
+        </form>
+        
+      </div>
+      <div id="staff-dashboard" hidden>
+      <div class="page-heading staff-heading"><div><p class="eyebrow">OFFICE TOOLS</p><h1 id="staff-title" tabindex="-1">Staff dashboard</h1><p>Manage the queue for your selected office.</p></div><label class="office-select">School office<select id="staff-office"></select></label></div>
+      <div class="dashboard-grid">
+        <div class="panel serving-panel"><div class="serving-number"><span>NOW SERVING</span><strong id="staff-current">—</strong></div><div class="next-line"><span>Next in line</span><strong id="staff-next">—</strong></div><div class="staff-actions"><button id="call-next" class="button primary">Call next <span aria-hidden="true">→</span></button><button id="skip-number" class="button secondary">Skip</button><button id="recall-number" class="button secondary">Recall</button></div><button id="reset-queue" class="text-button">Reset this office queue</button><p id="staff-message" class="message" aria-live="polite"></p></div>
+        <div class="panel waiting-panel"><div class="list-heading"><div><h2>Waiting students</h2><p id="waiting-count">0 people in line</p></div><span class="live-label"><span class="dot"></span> Queue list</span></div><div id="waiting-list" class="waiting-list"></div></div>
+      </div>
+      <button id="staff-logout" class="text-button logout-button" type="button">Log out</button>
+      
+      </div>
+    </section>
+  </main>
+  <footer><span class="brand small"><span class="brand-mark" aria-hidden="true">Q</span> QLite</span><span>Digital queues for a smoother day.</span></footer>
+</body>
+</html>
